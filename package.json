@@ -1,0 +1,109 @@
+{
+  "name": "react-router-native-animate-stack",
+  "version": "1.2.4",
+  "description": "custom animatable stack design from react router native",
+  "author": "Taymindis",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --no-cache",
+    "test:update": "jest -u",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn lint && yarn build",
+    "preversion": "yarn lint",
+    "version": "yarn format && git add -A src",
+    "postversion": "git push && git push --tags",
+    "rebuild": "rm -rf node_modules/ && rm -f yarn.lock && rm -f package.json.lock && rm -rf lib/ && yarn",
+    "rebuildw": "yarn removew & yarn",
+    "removew": "rmdir /s /q node_modules & del yarn.lock & del package.json.lock & rmdir /s /q lib",
+    "localinstall": "yarn link",
+    "localuninstall": "yarn unlink"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Taymindis/react-router-native-animate-stack.git"
+  },
+  "keywords": [
+    "react-native",
+    "react-router-native",
+    "react-router-native-animatable",
+    "react-router-native-stack",
+    "react-router-native-animate-stack",
+    "animate",
+    "stack",
+    "navigation"
+  ],
+  "bugs": {
+    "url": "https://github.com/Taymindis/react-router-native-animate-stack/issues"
+  },
+  "homepage": "https://github.com/Taymindis/react-router-native-animate-stack#readme",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-router-native": "*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.47",
+    "@babel/preset-typescript": "^7.1.0",
+    "@types/jest": "25.1.2",
+    "@types/react": "^16.9.25",
+    "@types/react-native": "^0.61.23",
+    "@types/react-router-native": "^5.1.0",
+    "@types/react-test-renderer": "16.8.3",
+    "babel-core": "^7.0.0-beta.47",
+    "babel-jest": "^25.1.0",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-react-native": "^4.0.1",
+    "jest": "^25.1.0",
+    "jest-cli": "^25.1.0",
+    "json": "^9.0.6",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "prettier": "1.18.0",
+    "react": "16.9.0",
+    "react-test-renderer": "16.5.1",
+    "ts-jest": "^25.2.1",
+    "tslint": "5.12.0",
+    "tslint-config-prettier": "1.17.0",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "preset": "react-native",
+    "transformIgnorePatterns": [
+      "node_modules/(?!react-native|react-router-native)/"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "ts",
+      "tsx"
+    ],
+    "collectCoverage": true,
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/react-native/jest/preprocessor.js"
+    },
+    "testMatch": [
+      "**/*.test.(j|t)s",
+      "**/*.test.(j|t)sx"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/node_modules"
+    ],
+    "coveragePathIgnorePatterns": [
+      "./src/__tests__/"
+    ]
+  },
+  "files": [
+    "lib/index.d.ts",
+    "lib/index.js",
+    "lib/index.js.map",
+    "lib/AnimatedStack.d.ts",
+    "lib/AnimatedStack.js",
+    "lib/AnimatedStack.js.map"
+  ]
+}

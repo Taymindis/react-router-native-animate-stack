@@ -1,0 +1,16 @@
+node_modules/
+/lib
+/coverage
+.DS_Store
+.yarn.lock
+.vscode
+.idea
+example/.DS_Store
+example/node_modules/
+example/.expo/
+example/npm-debug.log
+example/TODO.md
+example/yarn-error.log
+example/yarn.lock
+example/.idea
+example/.vscode
