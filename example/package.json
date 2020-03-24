@@ -4,8 +4,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "restart": "rm -rf node_modules/ && rm -f yarn.lock && rm -f package.json.lock && yarn && yarn start",
-    "restartw": "yarn removew & yarn & yarn start", 
-    "removew": "rmdir /s /q node_modules & del yarn.lock & del package.json.lock",    
+    "restartw": "yarn removew & yarn & yarn start",
+    "removew": "rmdir /s /q node_modules & del yarn.lock & del package.json.lock",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject"
@@ -17,7 +17,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
     "react-native-web": "~0.11.7",
     "react-router-native": "^5.1.2",
-    "react-router-native-animate-stack": "file:.."
+    "react-router-native-animate-stack": "^1.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
