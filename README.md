@@ -149,6 +149,98 @@ With this code given, the transition will be shown as below
 ![Customize Transiction Animation](https://raw.githubusercontent.com/Taymindis/react-router-native-animate-stack/master/demo/custom_transition.gif)
 
 
+
+### transition like butterfly
+
+![Butterfly Transiction Animation](https://raw.githubusercontent.com/Taymindis/react-router-native-animate-stack/master/demo/butterfly_transition.gif)
+
+```jsx
+activedViewStyleHandler={({ location, action, isNestedRoute }) => {
+  return {
+    transform: [
+      {
+        translateX: enterAnimKit.interpolate({
+          inputRange: [0, 1],
+          outputRange: [width, 0]
+        })
+      },
+      {
+        rotateX: enterAnimKit.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: ['0deg', '180deg', '0deg']
+      })
+    }
+    ]
+  };
+}}
+deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
+  return {
+    transform: [
+      {    
+        translateX: exitAnimKit.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -width]
+        })
+      },
+      {
+        rotateX: exitAnimKit.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: ['0deg', '180deg', '0deg']
+      })
+    }
+    ]
+  };
+}}
+```            
+
+
+
+
+### transition like Scaling
+
+![Scaling Transiction Animation](https://raw.githubusercontent.com/Taymindis/react-router-native-animate-stack/master/demo/scale_transition.gif)
+
+```jsx
+activedViewStyleHandler={({ location, action, isNestedRoute }) => {
+  return {
+    transform: [
+      {
+        translateX: enterAnimKit.interpolate({
+          inputRange: [0, 1],
+          outputRange: [width, 0]
+        })
+      },
+      {
+        scale: enterAnimKit.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [1, 0.2, 1]
+      })
+    }
+    ]
+  };
+}}
+deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
+  return {
+    transform: [
+      {    
+        translateX: exitAnimKit.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -width]
+        })
+      },
+      {
+        scale: exitAnimKit.interpolate({
+          inputRange: [0, 0.5, 1],
+          outputRange: [1, 0.2, 1]
+      })
+    }
+    ]
+  };
+}}
+
+```            
+
+
 ## Reason of created this
 
 React Router Native still a popular routing engine which native, clean(no other UI kit dependencies) and powerful for routing but no animation.
