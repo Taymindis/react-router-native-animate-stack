@@ -57,19 +57,31 @@ const App = () => {
                       inputRange: [0, 1],
                       outputRange: [width, 0]
                     })
-                  }
+                  },
+                  {
+                  scale: enterAnimKit.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [1, 0.2, 1]
+                  })
+                }
                 ]
               };
             }}
             deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
               return {
                 transform: [
-                  {
+                  {    
                     translateX: exitAnimKit.interpolate({
                       inputRange: [0, 1],
                       outputRange: [0, -width]
                     })
-                  }
+                  },
+                  {
+                  scale: exitAnimKit.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [1, 0.2, 1]
+                  })
+                }
                 ]
               };
             }}
