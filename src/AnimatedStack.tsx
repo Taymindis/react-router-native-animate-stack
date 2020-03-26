@@ -355,6 +355,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
           this.setState({ stackState: SWIPING_BACK_STATE });
           history.goBack();
         } else if (history.canGo(1) && x0 >= this._currWidth * 0.9) {
+          this._animXPos.setValue(this._currWidth);
           this._swipeForwardable = true;
           this.setState({ stackState: SWIPING_FORWD_STATE });
           history.goForward();
@@ -555,7 +556,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
               {
                 translateX: this._animXPos.interpolate({
                   inputRange: [LEFT_POSITION, this._currWidth],
-                  outputRange: ['-30%', '0%'],
+                  outputRange: [-(this._currWidth * .3), LEFT_POSITION],
                 }),
               },
             ],
@@ -572,7 +573,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
               {
                 translateX: this._animXPos.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [width, 0],
+                  outputRange: [width, LEFT_POSITION],
                 }),
               },
             ],
