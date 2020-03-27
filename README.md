@@ -240,6 +240,52 @@ deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
 
 ```            
 
+### transition up like Scaling
+
+![Scaling Transiction Up Animation](https://raw.githubusercontent.com/Taymindis/react-router-native-animate-stack/master/demo/scale_and_moveup.gif)
+
+```jsx
+  activedViewStyleHandler={({ location, action, isNestedRoute }) => {
+    return {
+      paddingLeft: 30,
+      transform: [
+        {
+          translateY: enterAnimKit.interpolate({
+            inputRange: [0, 1],
+            outputRange: [height, 0],
+          }),
+        },
+        {
+          scale: enterAnimKit.interpolate({
+            inputRange: [0, 0.5, 1],
+            outputRange: [1, 0.2, 1],
+          }),
+        },
+      ],
+    };
+  }}
+  deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
+    return {
+      paddingLeft: 30,
+      transform: [
+        {
+          translateY: exitAnimKit.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -height],
+          }),
+        },
+        {
+          scale: exitAnimKit.interpolate({
+            inputRange: [0, 0.5, 1],
+            outputRange: [1, 0.2, 1],
+          }),
+        },
+      ],
+    };
+  }}
+
+```            
+
 
 ## Reason of created this
 
