@@ -240,51 +240,94 @@ deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
 
 ```            
 
-### transition up like Scaling
+### Vertical Swipe and Navigation
 
-![Scaling Transiction Up Animation](https://raw.githubusercontent.com/Taymindis/react-router-native-animate-stack/master/demo/scale_and_moveup.gif)
+![Scaling Transiction Up Animation](https://raw.githubusercontent.com/Taymindis/react-router-native-animate-stack/master/demo/vertical_swipe.gif)
 
 ```jsx
-  activedViewStyleHandler={({ location, action, isNestedRoute }) => {
-    return {
-      paddingLeft: 30,
-      transform: [
-        {
-          translateY: enterAnimKit.interpolate({
-            inputRange: [0, 1],
-            outputRange: [height, 0],
-          }),
-        },
-        {
-          scale: enterAnimKit.interpolate({
-            inputRange: [0, 0.5, 1],
-            outputRange: [1, 0.2, 1],
-          }),
-        },
-      ],
-    };
-  }}
-  deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
-    return {
-      paddingLeft: 30,
-      transform: [
-        {
-          translateY: exitAnimKit.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, -height],
-          }),
-        },
-        {
-          scale: exitAnimKit.interpolate({
-            inputRange: [0, 0.5, 1],
-            outputRange: [1, 0.2, 1],
-          }),
-        },
-      ],
-    };
-  }}
 
-```            
+<NativeRouter>
+    <View style={styles.container}>
+      <View style={{ flex: 9, height: '100%' }}>
+        <AnimatedStack
+          swipeMethod={SwipeMethod.SWIPE_VERTICAL}
+          onMountAnimate={() => {
+            Animated.timing(enterAnimKit, {
+              toValue: 1,
+              duration: 100,
+            }).start();
+          }}
+          onTransitionAnimate={({ location, action, isNestedRoute }) => {
+            if (isNestedRoute) return;
+            // Enter and exit or one only
+            enterAnimKit.setValue(0);
+            exitAnimKit.setValue(0);
+
+            Animated.timing(enterAnimKit, {
+              toValue: 1,
+              duration: 500,
+              delay: 200,
+            }).start();
+
+            Animated.timing(exitAnimKit, {
+              toValue: 1,
+              duration: 500,
+            }).start();
+          }}
+          activedViewStyleHandler={({ location, action, isNestedRoute }) => {
+            return {
+              paddingLeft: 40,
+              transform: [
+                {
+                  translateY: enterAnimKit.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [height, 0],
+                  }),
+                },
+                {
+                  scale: enterAnimKit.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [1, 0.2, 1],
+                  }),
+                },
+              ],
+            };
+          }}
+          deactivedViewStyleHandler={({ location, action, isNestedRoute }) => {
+            return {
+              transform: [
+                {
+                  translateY: exitAnimKit.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -height],
+                  }),
+                },
+                {
+                  scale: exitAnimKit.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [1, 0.2, 1],
+                  }),
+                },
+              ],
+            };
+          }}
+        >
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/about">
+            <About />
+          </Route>
+          <Route path="/topics" component={Topics} />
+        </AnimatedStack>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Navigator />
+      </View>
+    </View>
+  </NativeRouter>
+
+```
 
 
 ## Reason of created this
