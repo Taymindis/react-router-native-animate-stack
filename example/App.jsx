@@ -26,6 +26,8 @@ const App = () => {
           <Navigator />
           <AnimatedStack
             swipeable={true}
+            swipeEdgeRange={0.6}
+            swipeSuccessEdge={0.1}
             onMountAnimate={() => {
               Animated.timing(enterAnimKit, {
                 toValue: 1,

@@ -1,5 +1,3 @@
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/Taymindis/react-router-native-animate-stack/coverage.svg?style=flat-square)](https://codecov.io/gh/Taymindis/react-router-native-animate-stack/)
-
 # react-router-native-animate-stack
 
 [![npm version](https://img.shields.io/npm/v/react-router-native-animate-stack.svg?style=flat-square)](https://www.npmjs.com/package/react-router-native-animate-stack)

@@ -49,6 +49,22 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
   swipeable: boolean;
   /**
    *
+   * how much edge range to trigger the swiping, default is 0.1 of whole screen size whether width or height
+   * - min > 0
+   * - max <= 1
+   *
+   */
+  swipeEdgeRange: number;
+  /**
+   *
+   * how much edge range to swiped succeed, default is 0.6 of whole screen size whether width or height
+   * - min > 0
+   * - max <= 1
+   * 
+   */
+  swipeSuccessEdge: number;
+  /**
+   *
    * define swipe method, default is SWIPE_HORIZONTAL
    *
    */
@@ -242,6 +258,8 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
     location: object.isRequired,
     swipeCancelSpeed: number,
     swipeable: bool,
+    swipeEdgeRange: number,
+    swipeSuccessEdge: number,
     swipeMethod: oneOf([SwipeMethod.SWIPE_HORIZONTAL, SwipeMethod.SWIPE_VERTICAL, SwipeMethod.NO_SWIPE, undefined]),
     onMountAnimate: func,
     onTransitionAnimate: (props: any, propName: any, componentName: any) => {
@@ -358,6 +376,10 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
   _unmounted = false;
   _swipeBackable = false;
   _swipeForwardable = false;
+  _swipeEdgeRangeBack = 0.1;
+  _swipeEdgeRangeForward = 0.1;
+  _swipeSuccessEdgeBack = 0.6;
+  _swipeSuccessEdgeForward = 0.6;
   _isAllowSwipe = false;
   _currWidth = Dimensions.get('window').width;
   _currHeight = Dimensions.get('window').height;
@@ -371,6 +393,16 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
     super(props);
     if (props.swipeCancelSpeed) {
       this._swipeCancelSpeed = props.swipeCancelSpeed;
+    }
+
+    if(props.swipeEdgeRange) {
+      this._swipeEdgeRangeBack = props.swipeEdgeRange;
+      this._swipeEdgeRangeForward = 1 - props.swipeEdgeRange;
+    }
+
+    if(props.swipeSuccessEdge) {
+      this._swipeSuccessEdgeBack = props.swipeSuccessEdge;
+      this._swipeSuccessEdgeForward = 1 - props.swipeSuccessEdge;
     }
 
     // if (props.leftPosition) {
@@ -408,11 +440,11 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
             onPanResponderGrant: (evt, { y0 }) => {
               const history = this.props.history;
               // If starting X position is less than 11%
-              if (history.canGo(-1) && y0 < this._currHeight * 0.16) {
+              if (history.canGo(-1) && y0 < this._currHeight * this._swipeEdgeRangeBack) {
                 this._swipeBackable = true;
                 this.setState({ stackState: SWIPING_BACK_STATE });
                 history.goBack();
-              } else if (history.canGo(1) && y0 >= this._currHeight * 0.9) {
+              } else if (history.canGo(1) && y0 >= this._currHeight * (this._swipeEdgeRangeForward) ) {
                 this._animXY.setValue(this._currHeight);
                 this._swipeForwardable = true;
                 this.setState({ stackState: SWIPING_FORWD_STATE });
@@ -430,10 +462,10 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
             onPanResponderRelease: (event, { moveY, dy }) => {
               // If last X position is more than 40%
               if (this._swipeBackable) {
-                const width = this._currHeight;
-                if (dy >= width * 0.6) {
+                const height = this._currHeight;
+                if (dy >= height * this._swipeSuccessEdgeBack) {
                   Animated.timing(this._animXY, {
-                    toValue: width,
+                    toValue: height,
                     duration: this._swipeCancelSpeed,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
@@ -454,8 +486,8 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                   });
                 }
               } else if (this._swipeForwardable) {
-                const width = this._currHeight;
-                if (moveY < width * 0.4) {
+                const height = this._currHeight;
+                if (moveY < height * this._swipeSuccessEdgeForward) {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
@@ -468,7 +500,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                 } else {
                   this.props.history.goBack();
                   Animated.timing(this._animXY, {
-                    toValue: width,
+                    toValue: height,
                     duration: this._swipeCancelSpeed,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
@@ -510,11 +542,11 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
             onPanResponderGrant: (evt, { x0 }) => {
               const history = this.props.history;
               // If starting X position is less than 11%
-              if (history.canGo(-1) && x0 < this._currWidth * 0.16) {
+              if (history.canGo(-1) && x0 < this._currWidth * this._swipeEdgeRangeBack) {
                 this._swipeBackable = true;
                 this.setState({ stackState: SWIPING_BACK_STATE });
                 history.goBack();
-              } else if (history.canGo(1) && x0 >= this._currWidth * 0.9) {
+              } else if (history.canGo(1) && x0 >= this._currWidth * this._swipeEdgeRangeForward) {
                 this._animXY.setValue(this._currWidth);
                 this._swipeForwardable = true;
                 this.setState({ stackState: SWIPING_FORWD_STATE });
@@ -535,7 +567,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
               // If last X position is more than 40%
               if (this._swipeBackable) {
                 const width = this._currWidth;
-                if (dx >= width * 0.6) {
+                if (dx >= width * this._swipeSuccessEdgeBack) {
                   Animated.timing(this._animXY, {
                     toValue: width,
                     duration: this._swipeCancelSpeed,
@@ -559,7 +591,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                 }
               } else if (this._swipeForwardable) {
                 const width = this._currWidth;
-                if (moveX < width * 0.4) {
+                if (moveX < width * this._swipeSuccessEdgeForward) {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
