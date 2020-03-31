@@ -11,7 +11,7 @@ import { SafeAreaView, StyleSheet, View, Animated, Easing, useWindowDimensions }
 
 import { NativeRouter, Route } from 'react-router-native';
 
-import AnimatedStack from 'react-router-native-animate-stack';
+import AnimatedStack, { SwipeMethod } from 'react-router-native-animate-stack';
 import Navigator from './Navigator';
 import { Home, Topics, About } from './Components';
 
@@ -25,9 +25,9 @@ const App = () => {
         <View style={styles.container}>
           <Navigator />
           <AnimatedStack
-            swipeable={true}
-            swipeEdgeRange={0.6}
-            swipeSuccessEdge={0.1}
+            swipeMethod={SwipeMethod.SWIPE_HORIZONTAL}
+            swipeEdgeRange={0.15}
+            swipeSuccessEdge={0.3}
             onMountAnimate={() => {
               Animated.timing(enterAnimKit, {
                 toValue: 1,

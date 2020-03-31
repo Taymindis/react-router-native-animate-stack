@@ -451,15 +451,16 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                 history.goForward();
               }
             },
-            onPanResponderMove: (evt, { moveY, dy }) => {
+            onPanResponderMove: (evt, { dy }) => {
               if (this._swipeBackable) {
                 this._animXY.setValue(dy);
               } else if (this._swipeForwardable) {
-                this._animXY.setValue(moveY);
+                const _y = dy + this._currHeight;
+                this._animXY.setValue(_y);
               }
             },
             onPanResponderTerminationRequest: (evt, gestureState) => true,
-            onPanResponderRelease: (event, { moveY, dy }) => {
+            onPanResponderRelease: (event, { dy }) => {
               // If last X position is more than 40%
               if (this._swipeBackable) {
                 const height = this._currHeight;
@@ -487,7 +488,8 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                 }
               } else if (this._swipeForwardable) {
                 const height = this._currHeight;
-                if (moveY < height * this._swipeSuccessEdgeForward) {
+                const _y = dy + height;
+                if (_y < height * this._swipeSuccessEdgeForward) {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
@@ -553,17 +555,16 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                 history.goForward();
               }
             },
-            onPanResponderMove: (evt, { moveX, dx }) => {
+            onPanResponderMove: (evt, { dx }) => {
               if (this._swipeBackable) {
                 this._animXY.setValue(dx);
               } else if (this._swipeForwardable) {
-                // const moveForwardX = (moveX + dx);
-                // const swipeX = (moveForwardX > this._currWidth)?this._currWidth:moveForwardX;
-                this._animXY.setValue(moveX);
+                const _x = dx + this._currWidth;
+                this._animXY.setValue(_x);
               }
             },
             onPanResponderTerminationRequest: (evt, gestureState) => true,
-            onPanResponderRelease: (event, { moveX, dx }) => {
+            onPanResponderRelease: (event, { dx }) => {
               // If last X position is more than 40%
               if (this._swipeBackable) {
                 const width = this._currWidth;
@@ -591,7 +592,8 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                 }
               } else if (this._swipeForwardable) {
                 const width = this._currWidth;
-                if (moveX < width * this._swipeSuccessEdgeForward) {
+                const _x = dx + width;
+                if (_x < width * this._swipeSuccessEdgeForward) {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
