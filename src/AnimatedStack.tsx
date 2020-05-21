@@ -296,11 +296,10 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
 
     const isSwiping = isSwiping_(stackState);
 
-    const { render, component, children } = prevActivedChild.props;
-    const { render: nRender, component: nComponent, children: nChildren } = nextChild.props;
+    // const { render, component, children } = prevActivedChild.props;
+    // const { render: nRender, component: nComponent, children: nChildren } = nextChild.props;
 
-    const isSameParent =
-      (component || children || render || {}).type === (nComponent || nChildren || nRender || {}).type;
+    const isSameParent = prevActivedChild.props.computedMatch.path === nextChild.props.computedMatch.path;
     if (isSwiping) {
       if (isPopBack) {
         return {
@@ -634,7 +633,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
     this.state = {
       panResponder,
       deactivedChild: null, // <Route component={InitAnimatableSwitchRoute} />,
-      activedChild: <Route component={InitAnimatableSwitchRoute} />,
+      activedChild: <Route computedMatch={{path:'~!.#@!'}} component={InitAnimatableSwitchRoute} />,
       stackState: INIT_STATE,
       location: { pathname: undefined },
       locKeys: [],
