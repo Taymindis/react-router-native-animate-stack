@@ -17,7 +17,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
     "react-native-web": "~0.11.7",
     "react-router-native": "^5.1.2",
-    "react-router-native-animate-stack": "^1.2.7"
+    "react-router-native-animate-stack": "^1.2.9"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

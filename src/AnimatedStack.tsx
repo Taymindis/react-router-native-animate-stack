@@ -60,7 +60,7 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * how much edge range to swiped succeed, default is 0.6 of whole screen size whether width or height
    * - min > 0
    * - max <= 1
-   * 
+   *
    */
   swipeSuccessEdge: number;
   /**
@@ -262,12 +262,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
     swipeSuccessEdge: number,
     swipeMethod: oneOf([SwipeMethod.SWIPE_HORIZONTAL, SwipeMethod.SWIPE_VERTICAL, SwipeMethod.NO_SWIPE, undefined]),
     onMountAnimate: func,
-    onTransitionAnimate: (props: any, propName: any, componentName: any) => {
-      const fn = props[propName];
-      if (!fn.prototype || (typeof fn.prototype.constructor !== 'function' && fn.prototype.constructor.length !== 10)) {
-        return new Error(propName + ' must be a function with 1 args');
-      }
-    },
+    onTransitionAnimate: func,
     activedViewStyleHandler: func,
     deactivedViewStyleHandler: func,
   };
@@ -385,6 +380,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
   _currHeight = Dimensions.get('window').height;
   _starting_position = 0;
   _animXY = new Animated.Value(this._starting_position);
+  _defaultEnterAnim = new Animated.Value(this._starting_position);
   _swipeCancelSpeed = 150;
   _defaultSwipeInStyle: any;
   _defaultSwipeOutStyle: any;
@@ -395,12 +391,12 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
       this._swipeCancelSpeed = props.swipeCancelSpeed;
     }
 
-    if(props.swipeEdgeRange) {
+    if (props.swipeEdgeRange) {
       this._swipeEdgeRangeBack = props.swipeEdgeRange;
       this._swipeEdgeRangeForward = 1 - props.swipeEdgeRange;
     }
 
-    if(props.swipeSuccessEdge) {
+    if (props.swipeSuccessEdge) {
       this._swipeSuccessEdgeBack = props.swipeSuccessEdge;
       this._swipeSuccessEdgeForward = 1 - props.swipeSuccessEdge;
     }
@@ -444,7 +440,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                 this._swipeBackable = true;
                 this.setState({ stackState: SWIPING_BACK_STATE });
                 history.goBack();
-              } else if (history.canGo(1) && y0 >= this._currHeight * (this._swipeEdgeRangeForward) ) {
+              } else if (history.canGo(1) && y0 >= this._currHeight * this._swipeEdgeRangeForward) {
                 this._animXY.setValue(this._currHeight);
                 this._swipeForwardable = true;
                 this.setState({ stackState: SWIPING_FORWD_STATE });
@@ -661,7 +657,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
     if (onMountAnimate) {
       onMountAnimate();
     } else {
-      this._animXY.setValue(1);
+      this._defaultEnterAnim.setValue(1);
     }
   }
 
@@ -687,8 +683,8 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
     if (isNestedRoute) {
       return;
     }
-    this._animXY.setValue(this._starting_position);
-    Animated.timing(this._animXY, {
+    this._defaultEnterAnim.setValue(this._starting_position);
+    Animated.timing(this._defaultEnterAnim, {
       toValue: 1,
       duration: 500,
     }).start();
@@ -748,7 +744,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
         : {
             transform: [
               {
-                translateX: this._animXY.interpolate({
+                translateX: this._defaultEnterAnim.interpolate({
                   inputRange: [0, 1],
                   outputRange: [width, this._starting_position],
                 }),
