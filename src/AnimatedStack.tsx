@@ -463,6 +463,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                   Animated.timing(this._animXY, {
                     toValue: height,
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
@@ -474,6 +475,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                     toValue: this._starting_position,
                     // easing: Easing.elastic(1000),
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
@@ -488,6 +490,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._animXY.setValue(this._starting_position);
                     this._swipeBackable = false;
@@ -499,6 +502,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                   Animated.timing(this._animXY, {
                     toValue: height,
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
@@ -512,6 +516,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
               Animated.timing(this._animXY, {
                 toValue: this._starting_position,
                 duration: this._swipeCancelSpeed,
+                useNativeDriver: true
               }).start(() => {
                 this._swipeBackable = false;
                 this._swipeForwardable = false;
@@ -567,6 +572,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                   Animated.timing(this._animXY, {
                     toValue: width,
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
@@ -578,6 +584,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                     toValue: this._starting_position,
                     // easing: Easing.elastic(1000),
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
@@ -592,6 +599,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._animXY.setValue(this._starting_position);
                     this._swipeBackable = false;
@@ -603,6 +611,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
                   Animated.timing(this._animXY, {
                     toValue: width,
                     duration: this._swipeCancelSpeed,
+                    useNativeDriver: true
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
@@ -616,6 +625,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
               Animated.timing(this._animXY, {
                 toValue: this._starting_position,
                 duration: this._swipeCancelSpeed,
+                useNativeDriver: true
               }).start(() => {
                 this._swipeBackable = false;
                 this._swipeForwardable = false;
@@ -686,6 +696,7 @@ class AnimatedStack extends React.Component<AnimatedStackProps, any> {
     Animated.timing(this._defaultEnterAnim, {
       toValue: 1,
       duration: 500,
+      useNativeDriver: true
     }).start();
   };
 
