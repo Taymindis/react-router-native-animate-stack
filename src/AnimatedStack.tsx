@@ -251,7 +251,7 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
  * It's contain 2 <Animated.View /> in between transitioning.
  *
  */
-class AnimatedStack extends React.Component<AnimatedStackProps, any> {
+class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
   static propTypes = {
     children: node.isRequired,
     style: ViewPropTypes.style,
