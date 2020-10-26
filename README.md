@@ -11,7 +11,7 @@ React Router Native v5 with your desired customization transition style! It's de
 
 This package only useable with React Router Native. Use it like a React router native's **Switch**
 
-[Snack Demo](https://snack.expo.io/@minikawoon/react-router-native-animate-stack)
+[Snack Demo](https://expo.io/@minikawoon/projects/rrn-animate-stack)
 
 ## Installation
 

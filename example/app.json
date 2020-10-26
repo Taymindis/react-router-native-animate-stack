@@ -10,8 +10,14 @@
       "web"
     ],
     "packagerOpts": {
-    "sourceExts": [ "js", "json", "ts", "tsx", "jsx"]
-  },
+      "sourceExts": [
+        "js",
+        "json",
+        "ts",
+        "tsx",
+        "jsx"
+      ]
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +34,8 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "eact Router Native v5 with your desired customization transition style! It's design with Animated.View",
+    "githubUrl": "https://github.com/Taymindis/react-router-native-animate-stack"
   }
 }
