@@ -1,15 +1,15 @@
 // This is 2 child overlapping animation like a stack navigator, also has exit animation feature(optional)
+import {bool, func, node, number, object, oneOf} from 'prop-types';
 import React from 'react';
-import { node, object, number, bool, string, oneOf, func } from 'prop-types';
 import {
-  View,
-  ViewPropTypes,
-  Dimensions,
   Animated,
+  Dimensions,
   PanResponder,
-  StyleProp,
-  ViewStyle,
   PanResponderCallbacks,
+  Platform,
+  StyleProp,
+  View,
+  ViewStyle,
 } from 'react-native';
 import { withRouter, Route, matchPath, RouteComponentProps } from 'react-router-native';
 
@@ -25,7 +25,11 @@ const TRANSITED_STATE = 1 << 6;
 const IDLE_STATE = 1 << 7;
 /** state management */
 
-const InitAnimatableSwitchRoute = () => <View style={{ backgroundColor: 'transparent' }}></View>;
+class InitAnimatableSwitchRoute extends React.Component {
+  render() {
+    return <View style={{backgroundColor: 'transparent'}}></View>;
+  }
+}
 
 export enum SwipeMethod {
   NO_SWIPE,
@@ -39,14 +43,14 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * when swiping halfway cancel, the speed of back to actual screen in ms, default is 150ms
    *
    */
-  swipeCancelSpeed: number;
+  swipeCancelSpeed?: number;
   /**
    *
    * when swipeable is false, no gesture swipe is allow, default is true
    * @deprecated('Will be replacing by swipe method for next version')
    *
    */
-  swipeable: boolean;
+  swipeable?: boolean;
   /**
    *
    * how much edge range to trigger the swiping, default is 0.1 of whole screen size whether width or height
@@ -54,7 +58,7 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * - max <= 1
    *
    */
-  swipeEdgeRange: number;
+  swipeEdgeRange?: number;
   /**
    *
    * how much edge range to swiped succeed, default is 0.6 of whole screen size whether width or height
@@ -62,19 +66,19 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * - max <= 1
    *
    */
-  swipeSuccessEdge: number;
+  swipeSuccessEdge?: number;
   /**
    *
    * define swipe method, default is SWIPE_HORIZONTAL
    *
    */
-  swipeMethod: undefined | number;
+  swipeMethod?: undefined | number;
   /**
    *
    * style of Animated.View
    *
    */
-  style: { width: any | undefined; height: any };
+  style?: {width: any | undefined; height: any};
   /**
    *
    * When componentDidmount, animate the component, enter and exit
@@ -90,7 +94,7 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * }}
    * ```
    */
-  onMountAnimate: () => void;
+  onMountAnimate?: () => void;
 
   /**
    *
@@ -122,7 +126,11 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * ```
    *
    */
-  onTransitionAnimate: (onAnimateParams: { location: object; action: string; isNestedRoute: boolean }) => void;
+  onTransitionAnimate?: (onAnimateParams: {
+    location: object;
+    action: string;
+    isNestedRoute: boolean;
+  }) => void;
 
   /**
    *
@@ -144,7 +152,7 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * ```
    *
    */
-  activedViewStyleHandler: (onAnimateParams: {
+  activedViewStyleHandler?: (onAnimateParams: {
     location: object;
     action: string;
     isNestedRoute: boolean;
@@ -170,7 +178,7 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * ```
    *
    */
-  deactivedViewStyleHandler: (onAnimateParams: {
+  deactivedViewStyleHandler?: (onAnimateParams: {
     location: object;
     action: string;
     isNestedRoute: boolean;
@@ -201,7 +209,7 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * ```
    *
    */
-  swipeInAnimationStyle: (onAnimateParams: {
+  swipeInAnimationStyle?: (onAnimateParams: {
     location: object;
     action: string;
     animXYValue: Animated.Value;
@@ -236,11 +244,12 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
    * ```
    *
    */
-  swipeOutAnimationStyle: (onAnimateParams: {
+  swipeOutAnimationStyle?: (onAnimateParams: {
     location: object;
     action: string;
     animXYValue: Animated.Value;
   }) => StyleProp<ViewStyle>;
+
   history: any;
   location: any;
 }
@@ -254,13 +263,18 @@ interface AnimatedStackProps extends RouteComponentProps<any> {
 class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
   static propTypes = {
     children: node.isRequired,
-    style: ViewPropTypes.style,
+    style: {},
     location: object.isRequired,
     swipeCancelSpeed: number,
     swipeable: bool,
     swipeEdgeRange: number,
     swipeSuccessEdge: number,
-    swipeMethod: oneOf([SwipeMethod.SWIPE_HORIZONTAL, SwipeMethod.SWIPE_VERTICAL, SwipeMethod.NO_SWIPE, undefined]),
+    swipeMethod: oneOf([
+      SwipeMethod.SWIPE_HORIZONTAL,
+      SwipeMethod.SWIPE_VERTICAL,
+      SwipeMethod.NO_SWIPE,
+      undefined,
+    ]),
     onMountAnimate: func,
     onTransitionAnimate: func,
     activedViewStyleHandler: func,
@@ -286,20 +300,29 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
       // locHistories
     } = prevState;
 
-    const { key } = location;
+    const {key} = location;
 
-    const nextChild: { props: any } | null = findLocationChild(childrens, location);
+    const nextChild: {props: any} | null = findLocationChild(
+      childrens,
+      location,
+    );
     if (!nextChild) {
       return null;
     }
-    const [locKeys, isPopBack, currKey] = isSwipeBack(prevLocKeys, key, previousKey);
+    const [locKeys, isPopBack, currKey] = isSwipeBack(
+      prevLocKeys,
+      key,
+      previousKey,
+    );
 
     const isSwiping = isSwiping_(stackState);
 
     // const { render, component, children } = prevActivedChild.props;
     // const { render: nRender, component: nComponent, children: nChildren } = nextChild.props;
 
-    const isSameParent = prevActivedChild.props.computedMatch.path === nextChild.props.computedMatch.path;
+    const isSameParent =
+      prevActivedChild.props.computedMatch.path ===
+      nextChild.props.computedMatch.path;
     if (isSwiping) {
       if (isPopBack) {
         return {
@@ -327,7 +350,10 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
           previousKey: currKey, // put currKey back to previousKey
         };
       }
-    } else if (stackState & (SWIPED_BACK_STATE | SWIPED_FORWD_STATE | SWIPED_CANCEL_STATE)) {
+    } else if (
+      stackState &
+      (SWIPED_BACK_STATE | SWIPED_FORWD_STATE | SWIPED_CANCEL_STATE)
+    ) {
       // if it is swiped state
       if (isPrevPopBack) {
         // swiped back
@@ -406,7 +432,9 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
     // }
 
     this._isAllowSwipe =
-      props.swipeable === true || props.swipeMethod === undefined || props.swipeMethod !== SwipeMethod.NO_SWIPE;
+      props.swipeable === true ||
+      props.swipeMethod === undefined ||
+      props.swipeMethod !== SwipeMethod.NO_SWIPE;
 
     this._defaultTransitionAnimate = this._defaultTransitionAnimate.bind(this);
     // this._defaultSwipeInStyle = this._defaultSwipeInStyle.bind(this);
@@ -416,8 +444,10 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
     this._defaultSwipeOutStyle = () => {};
     let panResponderConf: PanResponderCallbacks = {};
 
-    if (this._isAllowSwipe) {
-      const swipMethod = props.swipeMethod ? props.swipeMethod : SwipeMethod.SWIPE_HORIZONTAL; // Default is horizontal
+    if (this._isAllowSwipe && Platform.OS !== 'web') {
+      const swipMethod = props.swipeMethod
+        ? props.swipeMethod
+        : SwipeMethod.SWIPE_HORIZONTAL; // Default is horizontal
 
       switch (swipMethod) {
         case SwipeMethod.SWIPE_VERTICAL: {
@@ -425,28 +455,34 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
           this._defaultSwipeOutStyle = DEFAULT_VERTICAL_SWIPE_OUT_FN.bind(this);
           panResponderConf = {
             // onStartShouldSetPanResponder: () => true,
-            onMoveShouldSetPanResponder: (evt, { dy }) => {
+            onMoveShouldSetPanResponder: (evt, {dy}) => {
               if (dy < 0) {
                 dy = -dy;
               }
               return dy > this._currHeight * 0.05;
             },
             // onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-            onPanResponderGrant: (evt, { y0 }) => {
+            onPanResponderGrant: (evt, {y0}) => {
               const history = this.props.history;
               // If starting X position is less than 11%
-              if (history.canGo(-1) && y0 < this._currHeight * this._swipeEdgeRangeBack) {
+              if (
+                history.canGo(-1) &&
+                y0 < this._currHeight * this._swipeEdgeRangeBack
+              ) {
                 this._swipeBackable = true;
-                this.setState({ stackState: SWIPING_BACK_STATE });
+                this.setState({stackState: SWIPING_BACK_STATE});
                 history.goBack();
-              } else if (history.canGo(1) && y0 >= this._currHeight * this._swipeEdgeRangeForward) {
+              } else if (
+                history.canGo(1) &&
+                y0 >= this._currHeight * this._swipeEdgeRangeForward
+              ) {
                 this._animXY.setValue(this._currHeight);
                 this._swipeForwardable = true;
-                this.setState({ stackState: SWIPING_FORWD_STATE });
+                this.setState({stackState: SWIPING_FORWD_STATE});
                 history.goForward();
               }
             },
-            onPanResponderMove: (evt, { dy }) => {
+            onPanResponderMove: (evt, {dy}) => {
               if (this._swipeBackable) {
                 this._animXY.setValue(dy);
               } else if (this._swipeForwardable) {
@@ -455,7 +491,7 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
               }
             },
             onPanResponderTerminationRequest: (evt, gestureState) => true,
-            onPanResponderRelease: (event, { dy }) => {
+            onPanResponderRelease: (event, {dy}) => {
               // If last X position is more than 40%
               if (this._swipeBackable) {
                 const height = this._currHeight;
@@ -463,24 +499,24 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
                   Animated.timing(this._animXY, {
                     toValue: height,
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
-                    this.setState({ stackState: SWIPED_BACK_STATE });
+                    this.setState({stackState: SWIPED_BACK_STATE});
                   });
                 } else {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     // easing: Easing.elastic(1000),
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
                     this.props.history.goForward();
-                    this.setState({ stackState: SWIPED_CANCEL_STATE });
+                    this.setState({stackState: SWIPED_CANCEL_STATE});
                   });
                 }
               } else if (this._swipeForwardable) {
@@ -490,24 +526,24 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position);
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
-                    this.setState({ stackState: SWIPED_FORWD_STATE });
+                    this.setState({stackState: SWIPED_FORWD_STATE});
                   });
                 } else {
                   this.props.history.goBack();
                   Animated.timing(this._animXY, {
                     toValue: height,
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
-                    this.setState({ stackState: SWIPED_CANCEL_STATE });
+                    this.setState({stackState: SWIPED_CANCEL_STATE});
                   });
                 }
               }
@@ -516,11 +552,11 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
               Animated.timing(this._animXY, {
                 toValue: this._starting_position,
                 duration: this._swipeCancelSpeed,
-                useNativeDriver: true
+                useNativeDriver: true,
               }).start(() => {
                 this._swipeBackable = false;
                 this._swipeForwardable = false;
-                this.setState({ stackState: SWIPED_CANCEL_STATE });
+                this.setState({stackState: SWIPED_CANCEL_STATE});
               });
             },
           };
@@ -530,32 +566,40 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
         case SwipeMethod.SWIPE_HORIZONTAL:
         default: {
           this._defaultSwipeInStyle = DEFAULT_HORIZONTAL_SWIPE_IN_FN.bind(this);
-          this._defaultSwipeOutStyle = DEFAULT_HORIZONTAL_SWIPE_OUT_FN.bind(this);
+          this._defaultSwipeOutStyle = DEFAULT_HORIZONTAL_SWIPE_OUT_FN.bind(
+            this,
+          );
 
           panResponderConf = {
             // onStartShouldSetPanResponder: () => true,
-            onMoveShouldSetPanResponder: (evt, { dx }) => {
+            onMoveShouldSetPanResponder: (evt, {dx}) => {
               if (dx < 0) {
                 dx = -dx;
               }
               return dx > this._currWidth * 0.05;
             },
             // onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-            onPanResponderGrant: (evt, { x0 }) => {
+            onPanResponderGrant: (evt, {x0}) => {
               const history = this.props.history;
               // If starting X position is less than 11%
-              if (history.canGo(-1) && x0 < this._currWidth * this._swipeEdgeRangeBack) {
+              if (
+                history.canGo(-1) &&
+                x0 < this._currWidth * this._swipeEdgeRangeBack
+              ) {
                 this._swipeBackable = true;
-                this.setState({ stackState: SWIPING_BACK_STATE });
+                this.setState({stackState: SWIPING_BACK_STATE});
                 history.goBack();
-              } else if (history.canGo(1) && x0 >= this._currWidth * this._swipeEdgeRangeForward) {
+              } else if (
+                history.canGo(1) &&
+                x0 >= this._currWidth * this._swipeEdgeRangeForward
+              ) {
                 this._animXY.setValue(this._currWidth);
                 this._swipeForwardable = true;
-                this.setState({ stackState: SWIPING_FORWD_STATE });
+                this.setState({stackState: SWIPING_FORWD_STATE});
                 history.goForward();
               }
             },
-            onPanResponderMove: (evt, { dx }) => {
+            onPanResponderMove: (evt, {dx}) => {
               if (this._swipeBackable) {
                 this._animXY.setValue(dx);
               } else if (this._swipeForwardable) {
@@ -564,7 +608,7 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
               }
             },
             onPanResponderTerminationRequest: (evt, gestureState) => true,
-            onPanResponderRelease: (event, { dx }) => {
+            onPanResponderRelease: (event, {dx}) => {
               // If last X position is more than 40%
               if (this._swipeBackable) {
                 const width = this._currWidth;
@@ -572,24 +616,24 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
                   Animated.timing(this._animXY, {
                     toValue: width,
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
-                    this.setState({ stackState: SWIPED_BACK_STATE });
+                    this.setState({stackState: SWIPED_BACK_STATE});
                   });
                 } else {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     // easing: Easing.elastic(1000),
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
                     this.props.history.goForward();
-                    this.setState({ stackState: SWIPED_CANCEL_STATE });
+                    this.setState({stackState: SWIPED_CANCEL_STATE});
                   });
                 }
               } else if (this._swipeForwardable) {
@@ -599,24 +643,24 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
                   Animated.timing(this._animXY, {
                     toValue: this._starting_position,
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position);
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
-                    this.setState({ stackState: SWIPED_FORWD_STATE });
+                    this.setState({stackState: SWIPED_FORWD_STATE});
                   });
                 } else {
                   this.props.history.goBack();
                   Animated.timing(this._animXY, {
                     toValue: width,
                     duration: this._swipeCancelSpeed,
-                    useNativeDriver: true
+                    useNativeDriver: true,
                   }).start(() => {
                     this._animXY.setValue(this._starting_position); // let the pop out animated back to 0 position and change the page to poped out screen
                     this._swipeBackable = false;
                     this._swipeForwardable = false;
-                    this.setState({ stackState: SWIPED_CANCEL_STATE });
+                    this.setState({stackState: SWIPED_CANCEL_STATE});
                   });
                 }
               }
@@ -625,11 +669,11 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
               Animated.timing(this._animXY, {
                 toValue: this._starting_position,
                 duration: this._swipeCancelSpeed,
-                useNativeDriver: true
+                useNativeDriver: true,
               }).start(() => {
                 this._swipeBackable = false;
                 this._swipeForwardable = false;
-                this.setState({ stackState: SWIPED_CANCEL_STATE });
+                this.setState({stackState: SWIPED_CANCEL_STATE});
               });
             },
           };
@@ -643,9 +687,15 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
     this.state = {
       panResponder,
       deactivedChild: null, // <Route component={InitAnimatableSwitchRoute} />,
-      activedChild: <Route computedMatch={{path:'~!.#@!'}} component={InitAnimatableSwitchRoute} />,
+      activedChild: (
+        <Route
+          // @ts-ignore
+          computedMatch={{path: '~!.#@!'}}
+          component={InitAnimatableSwitchRoute}
+        />
+      ),
       stackState: INIT_STATE,
-      location: { pathname: undefined },
+      location: {pathname: undefined},
       locKeys: [],
       previousKey: undefined,
       isSameParent: false,
@@ -661,7 +711,7 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
   // }
 
   componentDidMount() {
-    const { onMountAnimate } = this.props;
+    const {onMountAnimate} = this.props;
     // this.setState({ activedChild })
     if (onMountAnimate) {
       onMountAnimate();
@@ -676,12 +726,12 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
     const {
       onTransitionAnimate,
       location,
-      history: { action },
+      history: {action},
     } = this.props;
-    const { stackState, isSameParent: isNestedRoute } = this.state;
+    const {stackState, isSameParent: isNestedRoute} = this.state;
     if (stackState & TRANSITING_STATE) {
       if (onTransitionAnimate) {
-        onTransitionAnimate({ location, action, isNestedRoute });
+        onTransitionAnimate({location, action, isNestedRoute});
       } else {
         this._defaultTransitionAnimate(isNestedRoute);
       }
@@ -696,7 +746,7 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
     Animated.timing(this._defaultEnterAnim, {
       toValue: 1,
       duration: 500,
-      useNativeDriver: true
+      useNativeDriver: true,
     }).start();
   };
 
@@ -709,7 +759,7 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
       activedChild,
       deactivedChild,
       stackState,
-      panResponder: { panHandlers: handles },
+      panResponder: {panHandlers: handles},
       // isPopBack,
       isSameParent: isNestedRoute,
       //   position
@@ -721,15 +771,17 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
       swipeOutAnimationStyle,
       activedViewStyleHandler,
       deactivedViewStyleHandler,
-      history: { action },
+      history: {action},
       location,
     } = this.props;
+
+    console.log(this.props.history);
     const {
       width: width_ = Dimensions.get('window').width,
       height: height_ = Dimensions.get('window').height,
       ...restStyle
     } = style || {};
-    const { width, height } = {
+    const {width, height} = {
       width: width_ || this._currWidth,
       height: height_ || this._currHeight,
     };
@@ -743,14 +795,14 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
     // if Swiping Disable user Enter & exit animation
     if (isSwiping_(stackState)) {
       enterAnimStyle = swipeInAnimationStyle
-        ? swipeInAnimationStyle({ location, action, animXYValue: this._animXY })
+        ? swipeInAnimationStyle({location, action, animXYValue: this._animXY})
         : this._defaultSwipeInStyle();
       exitAnimStyle = swipeOutAnimationStyle
-        ? swipeOutAnimationStyle({ location, action, animXYValue: this._animXY })
+        ? swipeOutAnimationStyle({location, action, animXYValue: this._animXY})
         : this._defaultSwipeOutStyle();
     } else {
       enterAnimStyle = activedViewStyleHandler
-        ? activedViewStyleHandler({ location, action, isNestedRoute })
+        ? activedViewStyleHandler({location, action, isNestedRoute})
         : {
             transform: [
               {
@@ -761,11 +813,13 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
               },
             ],
           };
-      exitAnimStyle = deactivedViewStyleHandler ? deactivedViewStyleHandler({ location, action, isNestedRoute }) : {};
+      exitAnimStyle = deactivedViewStyleHandler
+        ? deactivedViewStyleHandler({location, action, isNestedRoute})
+        : {};
     }
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <Animated.View
           style={{
             zIndex: 1,
@@ -780,12 +834,11 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
             backgroundColor: '#f2f2f2',
             shadowColor: 'black',
             shadowOpacity: 0.2,
-            shadowOffset: { width: 0, height: 0 },
+            shadowOffset: {width: 0, height: 0},
             shadowRadius: 5,
             ...restStyle,
             ...(exitAnimStyle as {}),
-          }}
-        >
+          }}>
           {deactivedChild}
         </Animated.View>
 
@@ -803,13 +856,12 @@ class AnimatedStack extends React.Component<Partial<AnimatedStackProps>, any> {
             backgroundColor: '#f2f2f2',
             shadowColor: 'black',
             shadowOpacity: 0.2,
-            shadowOffset: { width: 0, height: 0 },
+            shadowOffset: {width: 0, height: 0},
             shadowRadius: 5,
             ...restStyle,
             ...(enterAnimStyle as {}),
           }}
-          {...handles}
-        >
+          {...handles}>
           {activedChild}
         </Animated.View>
       </View>
@@ -824,17 +876,22 @@ function findLocationChild(children: any, location: any) {
   let match: any, child: any;
   React.Children.forEach(
     children,
-    (element: { props: { path: any; exact: any; strict: any; sensitive: any; from: any } }) => {
+    (element: {
+      props: {path: any; exact: any; strict: any; sensitive: any; from: any};
+    }) => {
       if (!React.isValidElement(element)) {
         return;
       }
 
-      const { path: pathProp, exact, strict, sensitive, from } = element.props;
+      const {path: pathProp, exact, strict, sensitive, from} = element.props;
       const path = pathProp || from;
 
       if (match == null) {
         child = element;
-        match = path == null ? {} : matchPath(location.pathname, { path, exact, strict, sensitive });
+        match =
+          path == null
+            ? {}
+            : matchPath(location.pathname, {path, exact, strict, sensitive});
       }
     },
   );
